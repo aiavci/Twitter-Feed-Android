@@ -46,7 +46,7 @@ class TwitterManager {
     fun fetchTweets(latitude: Double, longtitude: Double, radius: Int): List<Tweet> {
         val geoCode = "$latitude,$longtitude,${radius}km"
 
-        val searchUrl = "$baseUrl?geocode=$geoCode&count=25"
+        val searchUrl = "$baseUrl?geocode=$geoCode&count=100"
 
         return performFetch(searchUrl)
     }
