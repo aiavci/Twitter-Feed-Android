@@ -1,4 +1,11 @@
 <resources>
     <string name="app_name">Twitter Feed App</string>
     <string name="title_activity_maps">Map</string>
+
+    <string name="map">Map</string>
+    <string name="search">Search</string>
+    <string name="search_criteria">Search Criteria</string>
+    <string name="profile_picture">Profile Picture</string>
+    <string name="menu_item">Menu Item</string>
+
 </resources>

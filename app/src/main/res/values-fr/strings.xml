@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Twitter Alimentation App</string>
+    <string name="title_activity_maps">carte</string>
+
+    <string name="map">carte</string>
+    <string name="search">Chercher</string>
+    <string name="search_criteria">Chercher Criteria</string>
+    <string name="profile_picture">Profile Picture</string>
+    <string name="menu_item">Menu Item</string>
+
+</resources>

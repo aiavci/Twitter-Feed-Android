@@ -1,38 +1,19 @@
 package info.aiavci.twitterfeedapp
 
-import android.app.Dialog
 import android.content.pm.PackageManager
 import android.location.Geocoder
 import android.location.Location
-import android.net.Uri
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.support.customtabs.CustomTabsIntent
 import android.support.v4.app.ActivityCompat
-import android.support.v4.app.DialogFragment
-import android.support.v4.app.Fragment
-import android.support.v7.app.AlertDialog
-import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.view.Window
-import android.widget.TextView
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
-
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
-import com.squareup.picasso.Picasso
-import kotlinx.android.synthetic.main.activity_search.*
-import kotlinx.android.synthetic.main.tweet_item.*
-import kotlinx.android.synthetic.main.tweet_item.view.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
@@ -156,46 +137,5 @@ class MapsActivity : BaseActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClick
         }
 
         setUpMap()
-    }
-}
-
-class TweetFragment : DialogFragment() {
-
-    /** The system calls this to get the DialogFragment's layout, regardless
-    of whether it's being displayed as a dialog or an embedded fragment. */
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-
-        val nameContent = arguments?.getString("name")
-        val tweetTextContent = arguments?.getString("tweet")
-        val tweetId = arguments?.getString("id")
-        val profileUrl = arguments?.getString("url")
-
-        // Inflate the layout to use as dialog or embedded fragment
-        return inflater.inflate(R.layout.tweet_item, container, false).apply {
-            name?.text = nameContent
-
-            tweetText.text = tweetTextContent
-
-            Picasso.get().load(profileUrl).into(profileImage)
-
-            setOnClickListener {
-                val url = "https://twitter.com/statuses/$tweetId"
-
-                val builder = CustomTabsIntent.Builder()
-                val customTabsIntent = builder.build()
-                customTabsIntent.launchUrl(activity, Uri.parse(url))
-            }
-        }
-
-    }
-
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val dialog = super.onCreateDialog(savedInstanceState)
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-        return dialog
     }
 }

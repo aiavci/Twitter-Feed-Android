@@ -12,8 +12,8 @@ import kotlinx.android.synthetic.main.menu_item.view.*
 class MainAdapter(val context: Context): BaseAdapter() {
 
     private val menuItemsInfos = mutableListOf<Triple<Int, String, Activity>>(
-        Triple(R.drawable.map, "Maps", MapsActivity()),
-        Triple(R.drawable.search, "Search", SearchActivity())
+        Triple(R.drawable.map, context.getString(R.string.map), MapsActivity()),
+        Triple(R.drawable.search, context.getString(R.string.search), SearchActivity())
     )
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
