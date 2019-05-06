@@ -12,7 +12,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.net.URLEncoder
 
-class TwitterManager() {
+class TwitterManager {
 
     private var service: OAuth10aService
 

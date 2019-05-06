@@ -5,17 +5,21 @@ import android.location.Geocoder
 import android.location.Location
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
+import android.widget.SeekBar
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.CircleOptions
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import kotlinx.android.synthetic.main.activity_maps.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+
 
 class MapsActivity : BaseActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
@@ -28,6 +32,8 @@ class MapsActivity : BaseActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClick
     private val twitterManager: TwitterManager = TwitterManager()
 
     private val tweetMap = mutableMapOf<Marker, Tweet>()
+
+    private var radius = 5
 
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
@@ -42,6 +48,30 @@ class MapsActivity : BaseActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClick
         mapFragment.getMapAsync(this)
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+
+        radiusDisplay.text = "${radius}km"
+
+        seekBar.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener {
+            override fun onStartTrackingTouch(p0: SeekBar?) {}
+
+            override fun onStopTrackingTouch(p0: SeekBar?) {
+                map.addCircle(CircleOptions()
+                    .center(LatLng(lastLocation.latitude, lastLocation.longitude))
+                    .radius(radius.toDouble() * 1000)
+                    .strokeWidth(0f)
+                    .fillColor(0x550000FF))
+
+                populateTweets()
+            }
+
+            override fun onProgressChanged(p0: SeekBar?, progress: Int, p2: Boolean) {
+                radius = progress
+
+                radiusDisplay.text = "${radius}km"
+
+                map.clear()
+            }
+        })
     }
 
     override fun onMarkerClick(marker: Marker?): Boolean {
@@ -86,21 +116,40 @@ class MapsActivity : BaseActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClick
             val currentLatLng = LatLng(location.latitude, location.longitude)
             map.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 8f))
 
-            GlobalScope.launch {
-                val tweets = twitterManager.fetchTweets(location.latitude, location.longitude, 5)
+            populateTweets()
 
-                tweets.forEach { tweet ->
-                    if (tweet.placeName !== null) {
-                        val geoCoder = Geocoder(this@MapsActivity)
-                        val address = geoCoder.getFromLocationName(tweet.placeName , 1).first()
+            map.addCircle(CircleOptions()
+                .center(LatLng(lastLocation.latitude, lastLocation.longitude))
+                .radius(radius.toDouble() * 1000)
+                .strokeWidth(0f)
+                .fillColor(0x550000FF))
+        }
+    }
 
-                        drawTweetMarker(address.latitude, address.longitude, tweet)
+    private fun populateTweets() {
+        GlobalScope.launch {
+            val tweets = twitterManager.fetchTweets(lastLocation.latitude, lastLocation.longitude, radius)
 
-                    } else if (tweet.coordinates !== null && tweet.coordinates !== "null") {
-                        val coordinates = tweet.coordinates.split(",")
+            tweets.forEach { tweet ->
+                if (tweet.placeName !== null) {
+                    val geoCoder = Geocoder(this@MapsActivity)
 
-                        drawTweetMarker(coordinates[0].toDouble(), coordinates[1].toDouble(), tweet)
+                    val address = geoCoder.getFromLocationName(tweet.placeName , 1).first()
+
+                    val addressAsLocation = Location("Address"). apply {
+                        latitude = address.latitude
+                        longitude = address.longitude
                     }
+
+                    if (lastLocation.distanceTo(addressAsLocation) < radius * 1000) {
+                        // Set marker if place is within radius
+                        drawTweetMarker(address.latitude, address.longitude, tweet)
+                    }
+
+                } else if (tweet.coordinates !== null && tweet.coordinates !== "null") {
+                    val coordinates = tweet.coordinates.split(",")
+
+                    drawTweetMarker(coordinates[0].toDouble(), coordinates[1].toDouble(), tweet)
                 }
             }
         }

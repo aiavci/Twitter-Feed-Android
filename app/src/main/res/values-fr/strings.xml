@@ -8,5 +8,6 @@
     <string name="search_criteria">Chercher Criteria</string>
     <string name="profile_picture">Profile Picture</string>
     <string name="menu_item">Menu Item</string>
+    <string name="set_radius">Set Radius</string>
 
 </resources>
