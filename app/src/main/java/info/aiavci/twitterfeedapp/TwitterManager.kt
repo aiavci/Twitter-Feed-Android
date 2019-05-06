@@ -8,10 +8,9 @@ import com.github.scribejava.core.model.OAuthRequest
 import com.github.scribejava.core.model.Response
 import com.github.scribejava.core.model.Verb
 import com.github.scribejava.core.oauth.OAuth10aService
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONObject
+import java.net.URLEncoder
 
 class TwitterManager() {
 
@@ -38,7 +37,8 @@ class TwitterManager() {
     }
 
     fun fetchTweets(searchText: String = ""): List<Tweet> {
-        val searchUrl = "$baseUrl?q=$searchText"
+        val encodedUrl = URLEncoder.encode(searchText, "utf-8")
+        val searchUrl = "$baseUrl?q=$encodedUrl"
 
         return performFetch(searchUrl)
     }
